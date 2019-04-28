@@ -27,7 +27,7 @@ function menu() {
             name: "menu",
             type: "list",
             message: "Please make a Selection",
-            choices: ["View Products for Sale", "View Low Inventory Items", "Add to Inventory", "Add New Product"]
+            choices: ["View Products for Sale", "View Low Inventory Items", "Add to Inventory", "Add New Product", "EXIT"]
         })
         .then(function (answer) {
             
