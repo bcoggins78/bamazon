@@ -1,9 +1,10 @@
+// Loads required modules
 require("dotenv").config();
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var sqlPwd = process.env.MYSQL_PASS; // Contains the MySQL password
 
-
+// Defines the connection to mysql db and assigns it to variable
 var connection = mysql.createConnection({
 
     host: "localhost",
@@ -14,114 +15,100 @@ var connection = mysql.createConnection({
 
 });
 
+// Establishes connection to the database and runs the transaction function
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     transaction();
 });
 
-// function displayProducts() {
-//     console.log("\n\n---------------------------\nProducts Currently for sale\n---------------------------\n");
-//     connection.query("SELECT * FROM products", function (err, res) {
+// Function used to round the price values to 2 decimal places
+function round(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals).toFixed(decimals);
+}
 
-//         if (err) throw err;
-//         for (var i = 0; i < res.length; i++) {
-
-//             console.log("==================================")
-//             console.log("Item ID: " + res[i].item_id);
-//             console.log("Product Name: " + res[i].product_name);
-//             console.log("Price: $" + res[i].price);
-//             console.log("==================================")
-
-//         }
-
-//         pickItem()
-
-//     });
-// }
-
+// Function that runs the transaction
 function transaction() {
 
+    // Queries the bamazon db and selects all fields from the products table
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
 
+        // Prompt that will display everything currently in inventory and then asks the use to select the Item ID for the desired product
         inquirer
-            .prompt([{
-                name: "choice",
-                type: "rawlist",
-                choices: function () {
-                    var idArray = [];
-                    console.log("\n\n---------------------------\nProducts Currently for sale\n---------------------------\n");
-                    for (var i = 0; i < results.length; i++) {
-                        console.log("==================================")
-                        console.log("Item ID: " + idArray.push(results[i].item_id));
-                        console.log("Product Name: " + results[i].product_name);
-                        console.log("Price: $" + results[i].price);
-                        console.log("==================================\n")
-                    }
-                    return idArray;
+            .prompt([
+                {
+                    name: "choice",
+                    type: "rawlist",
+                    choices: function () {
+                        var idArray = [];
+                        console.log("\n\n---------------------------\n  Products Currently for sale\n---------------------------\n");
+                        for (var i = 0; i < results.length; i++) {
+                            console.log("==================================================")
+                            console.log("  Item ID: " + idArray.push(results[i].item_id));
+                            console.log("  Product Name: " + results[i].product_name);
+                            console.log("  Category: " + results[i].department_name);
+                            console.log("  Price: $" + results[i].price);
+                            console.log("  Current Stock: " + results[i].stock_quantity);
+                            console.log("==================================================\n")
+                        }
+                        return idArray;
+                    },
+                    message: "Enter the Item ID number of the product you would like to buy."
                 },
-                message: "Enter the Item ID number of the product you would like to buy."
-            },
-            {
-                name: "quantity",
-                type: "input",
-                message: "How many would you like to buy?"
-            }
+
+                // Asks the user the quantity they would like to purchase
+                {
+                    name: "quantity",
+                    type: "input",
+                    message: "How many would you like to buy?"
+                }
             ])
 
             .then(function (answer) {
 
+                // Defines variables for the product and it's table values
                 var arrayNum = answer.choice - 1;
-                console.log("\n==================================\nProduct: " + results[arrayNum].product_name + "\nQuantity: "
-                    + answer.quantity + "\nAmount Left in Stock: " + results[arrayNum].stock_quantity + "\nTotal: $" +
-                    answer.quantity * results[arrayNum].price + "\n==================================");
+                var total = round(answer.quantity * results[arrayNum].price, 2)
+                var itemID = results[arrayNum].item_id;
+                var prodName = results[arrayNum].product_name;
+                var quantityToBuy = answer.quantity;
+                var stockQuantity = results[arrayNum].stock_quantity;
 
-                    inquirer
-                        .prompt([
+                // Checks to see if there is enough inventory stock to fullfill the user's purchase
+                if (quantityToBuy > stockQuantity) {
+                    console.log("Insufficient quantity!");
+                }
+
+                else {
+                    // Variable that holds the updated inventory stock after the purchase
+                    var updatedQuantity = stockQuantity - quantityToBuy;
+
+                    // Updates the products table and sets the stock_quantity value to the updated quantity 
+                    // where the item_id is the number the user selected
+                    connection.query(
+                        "UPDATE products SET ? WHERE ?",
+                        [
                             {
-                                type: "confirm",
-                                message: "Proceed with transaction?",
-                                name: "confirm",
-                                default: true
+                                stock_quantity: updatedQuantity
+                            },
+                            {
+                                item_id: itemID
                             }
-                        ])
-                        .then(function(response) {
-                            if (response.confirm) {
-                                
-                            }
+                        ],
+                        function (error) {
+                            if (error) throw err;
 
-                            if (answer.quantity > results[arrayNum].stock_quantity) {
-                                console.log("Insufficient quantity!");
-                            }
+                            // Shows the user what they purchased and the amount.
+                            console.log("\nItem(s) Purchased!");
+                            console.log("==================================\n  Item ID: " + itemID + "\n  Product: " + prodName + "\n  Quantity: "
+                                + quantityToBuy + "\n  Total: $" + total + "\n==================================");
+                        }
+                    );
+                }
 
-                            else {
-                                var stockQuantity = results[arrayNum].stock_quantity-answer.quantity;
-                                var itemId = results[arrayNum].item_id
-                                connection.query(
-                                    "UPDATE products SET ? WHERE ?",
-                                    [
-                                      {
-                                        stock_quantity: stockQuantity
-                                      },
-                                      {
-                                        item_id: itemId
-                                      }
-                                    ],
-                                    function (error) {
-                                      if (error) throw err;
-                                      console.log("Item(s) Purchased!");
-                                      
-                                    }
-                                );
-                                
-                            }
-
-                            
-                        })
-
+                // Closes connection to bamazon db
                 connection.end();
-
             });
     });
 };
