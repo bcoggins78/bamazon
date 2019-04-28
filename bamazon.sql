@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS bamazon;
+
 CREATE DATABASE bamazon;
 
 USE bamazon;
@@ -15,7 +17,7 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES ("MSI GeForce GTX 1050 TI Gaming X 4G", "Electronics", 189.00, 54);
 
 INSERT INTO products (product_name, department_name, price, stock_quantity)
-VALUES ("Epiphone Les Paul Electric Guitar", "Musical Instruments", 599.00, 22);
+VALUES ("Epiphone Les Paul Electric Guitar", "Musical Instruments", 599.00, 3);
 
 INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES ("FurHaven Pet Dog Bed", "Pet Supplies", 37.99, 85);
@@ -39,6 +41,10 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES ("The Last of Us", "Video Games", 19.61, 22);
 
 INSERT INTO products (product_name, department_name, price, stock_quantity)
-VALUES ("CORSAIR Crystal 570X RGB Mid-Tower Case", "Electroncs", 159.98, 22);
+VALUES ("CORSAIR Crystal 570X RGB Mid-Tower Case", "Electroncs", 159.98, 4);
 
-SELECT * FROM products;
+-- SELECT * FROM products;
+-- update products set stock_quantity = 3 where item_id = 6;
+
+-- SELECT * FROM products WHERE stock_quantity < 5;
+
