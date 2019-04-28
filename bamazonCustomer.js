@@ -22,7 +22,7 @@ connection.connect(function (err) {
     transaction();
 });
 
-// Function used to round the price values to 2 decimal places
+// Function used to round the price values and set it to 2 decimal places
 function round(value, decimals) {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals).toFixed(decimals);
 }
