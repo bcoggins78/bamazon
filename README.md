@@ -76,7 +76,7 @@ When using bamazonManager, the user is given a menu with four choices:
 
 ![low-inventory-product-selection](/media/bamazonManager-4.jpg)
 
-- We got 30 new ones in the warehouse so we'll add this to the database.
+- We received 30 in the warehouse so we'll add this to the database.
 
 ![low-inventory-add-quantity](/media/bamazonManager-5.jpg)
 
