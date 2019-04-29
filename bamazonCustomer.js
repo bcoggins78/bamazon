@@ -42,7 +42,7 @@ function transaction() {
                     type: "rawlist",
                     choices: function () {
                         var idArray = [];
-                        console.log("\n\n---------------------------\n  Products Currently for sale\n---------------------------\n");
+                        console.log("\n\n-------------------------------\n  Products Currently for sale\n-------------------------------\n");
                         for (var i = 0; i < results.length; i++) {
                             console.log("==================================================")
                             console.log("  Item ID: " + idArray.push(results[i].item_id));
