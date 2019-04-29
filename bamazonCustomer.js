@@ -69,7 +69,8 @@ function transaction() {
 
                 // Defines variables for the product and it's table values
                 var arrayNum = answer.choice - 1;
-                var total = round(answer.quantity * results[arrayNum].price, 2)
+                var price = round(results[arrayNum].price, 2)
+                var total = round(answer.quantity * price, 2)
                 var itemID = results[arrayNum].item_id;
                 var prodName = results[arrayNum].product_name;
                 var quantityToBuy = answer.quantity;
@@ -101,7 +102,7 @@ function transaction() {
 
                             // Shows the user what they purchased and the amount.
                             console.log("\nItem(s) Purchased!");
-                            console.log("==================================\n  Item ID: " + itemID + "\n  Product: " + prodName + "\n  Quantity: "
+                            console.log("==================================\n  Item ID: " + itemID + "\n  Product: " + prodName + "\n  Price: $" + price + "\n  Quantity: "
                                 + quantityToBuy + "\n  Total: $" + total + "\n==================================");
                         }
                     );
