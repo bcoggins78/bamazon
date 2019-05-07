@@ -11,6 +11,7 @@ This project uses:
 
 * JavaScript
 * Node.js
+* Inquire
 * MySQL
 * DotEnv
 
